@@ -13,7 +13,7 @@ class Person < ActiveRecord::Base
   end
 
   def self.order_by_location_name
-    joins(:location).order("locations.name")
+    joins(:location).merge(Location.order(:name))
   end
 
   def self.with_employees

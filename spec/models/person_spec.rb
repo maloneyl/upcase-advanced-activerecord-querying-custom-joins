@@ -93,7 +93,7 @@ describe Person do
   end
 
   describe ".with_employees.with_local_coworkers.order_by_location_name" do
-    it "combines scopes" do
+    def do_setup
       locations = [
         create(:location, name: "location1"),
         create(:location, name: "location3"),
@@ -108,6 +108,10 @@ describe Person do
           create(:person, name: "employee-#{manager.name}", manager: manager)
         end
       end
+    end
+
+    it "combines scopes" do
+      do_setup
 
       result = Person.with_employees.with_local_coworkers.order_by_location_name
 
@@ -116,6 +120,20 @@ describe Person do
         manager-location2
         manager-location3
       ))
+    end
+
+    context "when the order of the scopes is different" do
+      it "still works" do
+        do_setup
+
+        result = Person.with_local_coworkers.with_employees.order_by_location_name
+
+        expect(result.map(&:name)).to eq(%w(
+          manager-location1
+          manager-location2
+          manager-location3
+        ))
+      end
     end
   end
 end
